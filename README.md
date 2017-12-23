@@ -19,6 +19,16 @@ Steps:
 1. Open Plex http://YOUR_IP:32400/web/index.html and libraries, Movies path is `/data/movies/` and TV path is `/data/tv/`
     1. Edit $MOUNT_POINT/mp4_automator/autoProcess.ini with your Plex token and ip.
 
+
+Steps:
+1. Create a user with priviliges over media and docker folders, and get UID and GID.
+1. Install docker https://docs.docker.com/engine/installation/#platform-support-matrix
+1. Install docker-compose https://docs.docker.com/compose/install/
+1. Run `git clone https://github.com/davearata/MediaCenterSetup`
+1. Edit .env to configure environment settings.
+1. In Sonarr, Radarr, etc, connect to other services using their name as hostname - e.g. transmission host is transmission.
+
+
 ### Notes
 This assumes you have one user who's PGID/PUID is 1000. Change this as needed if you arne't using the first user created
 

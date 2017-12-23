@@ -7,10 +7,13 @@ services:
     privileged: true
     restart: always
     ports:
-      - 9091:9091
+      - 9091:9091 #transmission port
+      - 7878:7878 #radarr port
+      - 8989:8989 #sonarr port
+      - 9117:9117 #jackett port
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=$PUID
+      - PGID=$PGID
       - OPENVPN_PROVIDER=${VPN_PROVIDER}
       - OPENVPN_CONFIG=${VPN_CONFIG}
       - OPENVPN_USERNAME=${VPN_USERNAME}
@@ -23,36 +26,32 @@ services:
 
   radarr:
     container_name: radarr
-    image: aront/radarr:latest
-    ports:
-      - 7878:7878
+    image: linuxserver/radarr:latest
+    network_mode: service:transmission
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=$PUID
+      - PGID=$PGID
       - TZ=${TIME_ZONE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ${MOUNT_POINT}/radarr-config:/config
+      - ${MOUNT_POINT}/radarr/config:/config
       - ${MOUNT_POINT}/transmission:/downloads
-      - ${MOUNT_POINT}/mp4_automator:/config_mp4_automator
       - ${MOUNT_POINT}/plex/movies:/movies
     depends_on:
       - transmission
   
   sonarr:
     container_name: sonarr
-    image: aront/sonarr:latest
-    ports:
-      - 8989:8989
+    image: linuxserver/sonarr:latest
+    network_mode: service:transmission
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=$PUID
+      - PGID=$PGID
       - TZ=${TIME_ZONE}
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${MOUNT_POINT}/sonarr/config:/config
       - ${MOUNT_POINT}/transmission:/downloads
-      - ${MOUNT_POINT}/mp4_automator:/config_mp4_automator
       - ${MOUNT_POINT}/plex/tv:/tv
     depends_on:
       - transmission
@@ -60,15 +59,16 @@ services:
   jackett:
     container_name: jackett
     image: linuxserver/jackett:latest
-    ports:
-      - 9117:9117
+    network_mode: service:transmission
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=$PUID
+      - PGID=$PGID
       - TZ=${TIME_ZONE}
     volumes:
       - ${MOUNT_POINT}/jackett/config/:/config
       - ${MOUNT_POINT}/jackett/downloads/:/downloads
+    depends_on:
+      - transmission
 
   plex:
     container_name: plex
