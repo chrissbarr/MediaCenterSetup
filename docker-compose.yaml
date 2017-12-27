@@ -20,6 +20,7 @@ services:
       - OPENVPN_PASSWORD=${VPN_PASSWORD}
       - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
       - LOCAL_NETWORK=${LOCAL_NETWORK}
+      - TRANSMISSION_WEB_UI=kettu
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${MOUNT_POINT}/transmission:/data
@@ -69,6 +70,30 @@ services:
       - ${MOUNT_POINT}/jackett/downloads/:/downloads
     depends_on:
       - transmission
+
+  muximux:
+    container_name: muximux
+    image: linuxserver/muximux:latest
+    ports:
+      - 8020:80
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=${TIME_ZONE}
+    volumes:
+      - ${MOUNT_POINT}/muximux/config/:/config
+
+  htpcmanager:
+    container_name: htpcmanager
+    image: linuxserver/htpcmanager:latest
+    ports:
+      - 8085:8085
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=${TIME_ZONE}
+    volumes:
+      - ${MOUNT_POINT}/htpcmanager/config/:/config
 
   plex:
     container_name: plex
